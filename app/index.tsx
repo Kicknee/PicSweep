@@ -1,4 +1,7 @@
 import { Image } from "expo-image";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { useFonts } from "expo-font";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 
 export default function Index() {
@@ -7,8 +10,26 @@ export default function Index() {
   const RightArrowBtn = require("@/assets/images/right-arrow.png");
   const CancelBtn = require("@/assets/images/cancel.png");
   const AcceptBtn = require("@/assets/images/accept.png");
+
+  const [loaded, error] = useFonts({
+    Pacifico: require("@/assets/fonts/Pacifico-Regular.ttf"),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   return (
     <View style={style.container}>
+      <View>
+        <Text style={style.appTitle}>PicSweep</Text>
+      </View>
       <View style={style.imageContainer}>
         <View style={[style.iconsTaskbar, style.iconsTaskbarLeft]}>
           <Image style={[style.icon, style.arrowIcon]} source={LeftArrowBtn} />
@@ -38,12 +59,17 @@ const style = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E67263",
-    justifyContent: "center",
     alignItems: "center",
   },
+  appTitle: {
+    fontFamily: "Pacifico",
+    fontSize: 64,
+    color: "white",
+    marginVertical: 40,
+  },
   imageContainer: {
-    width: "75%",
-    height: "70%",
+    width: "70%",
+    height: "60%",
     position: "relative",
     flexDirection: "row",
     justifyContent: "center",
