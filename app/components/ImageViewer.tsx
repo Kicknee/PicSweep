@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { View, Pressable, StyleSheet, Alert, Linking } from "react-native";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
+import AsyncStorafe from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Photo {
   id: string;
@@ -21,47 +23,70 @@ export default function ImageViewer() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState<number>(0);
 
+  const fetchLocalPhotos = async () => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Camera access required",
+        "You need to manually enable camera access in the app settings.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Open Settings", onPress: () => Linking.openSettings() },
+        ]
+      );
+
+      return;
+    }
+
+    const media = await MediaLibrary.getAssetsAsync({
+      mediaType: "photo",
+      first: 50,
+    });
+
+    const fetchedPhotos: Photo[] = media.assets.map((asset) => ({
+      id: asset.id,
+      uri: asset.uri,
+    }));
+    console.log(fetchedPhotos);
+    setPhotos(fetchedPhotos);
+  };
+
   useEffect(() => {
-    (async () => {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Camera access required",
-          "You need to manually enable camera access in the app settings.",
-          [
-            { text: "Cancel", style: "cancel" },
-            { text: "Open Settings", onPress: () => Linking.openSettings() },
-          ]
-        );
-
-        return;
-      }
-
-      const media = await MediaLibrary.getAssetsAsync({
-        mediaType: "photo",
-        first: 5,
-      });
-
-      const fetchedPhotos: Photo[] = media.assets.map((asset) => ({
-        id: asset.id,
-        uri: asset.uri,
-      }));
-      console.log(fetchedPhotos);
-      setPhotos(fetchedPhotos);
-    })();
+    fetchLocalPhotos();
   }, []);
 
-  function keepPhoto(id: id) {
+  const compareWithSortedPhotos = () => {};
+
+  const keepPhoto = (id: id) => {
     setSortedPhotos([...sortedPhotos, id]);
+    storeIdData();
     showNextPhoto();
-  }
-  function showNextPhoto() {
+  };
+  const showNextPhoto = () => {
     if (currentPhotoIndex + 1 < photos.length) {
       setCurrentPhotoIndex((prev) => prev + 1);
     } else {
       Alert.alert("Done", "No more photos to sweep!");
     }
-  }
+  };
+
+  const getIdData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("sortedPhotos");
+      setSortedPhotos(jsonValue != null ? JSON.parse(jsonValue) : []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const storeIdData = async () => {
+    try {
+      const jsonValue = JSON.stringify(sortedPhotos);
+      await AsyncStorage.setItem("sortedPhotos", jsonValue);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <View style={style.imageContainer}>
       <View style={[style.iconsTaskbar, style.iconsTaskbarLeft]}>
