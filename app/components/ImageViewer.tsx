@@ -8,6 +8,8 @@ interface Photo {
   uri: string;
 }
 
+type id = string;
+
 export default function ImageViewer() {
   const PlaceholderImage = require("@/assets/images/background-image.png");
   const LeftArrowBtn = require("@/assets/images/left-arrow.png");
@@ -15,7 +17,7 @@ export default function ImageViewer() {
   const CancelBtn = require("@/assets/images/cancel.png");
   const AcceptBtn = require("@/assets/images/accept.png");
 
-  const [sortedPhotos, setSortedPhotos] = useState<Photo[]>([]);
+  const [sortedPhotos, setSortedPhotos] = useState<id[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState<number>(0);
 
@@ -37,17 +39,22 @@ export default function ImageViewer() {
 
       const media = await MediaLibrary.getAssetsAsync({
         mediaType: "photo",
-        first: 3,
+        first: 5,
       });
 
       const fetchedPhotos: Photo[] = media.assets.map((asset) => ({
         id: asset.id,
         uri: asset.uri,
       }));
+      console.log(fetchedPhotos);
       setPhotos(fetchedPhotos);
     })();
   }, []);
 
+  function keepPhoto(id: id) {
+    setSortedPhotos([...sortedPhotos, id]);
+    showNextPhoto();
+  }
   function showNextPhoto() {
     if (currentPhotoIndex + 1 < photos.length) {
       setCurrentPhotoIndex((prev) => prev + 1);
@@ -74,7 +81,10 @@ export default function ImageViewer() {
 
       <View style={[style.iconsTaskbar, style.iconsTaskbarRight]}>
         <Image style={[style.icon, style.arrowIcon]} source={RightArrowBtn} />
-        <Pressable style={style.btn} onPress={showNextPhoto}>
+        <Pressable
+          style={style.btn}
+          onPress={() => keepPhoto(photos[currentPhotoIndex].id)}
+        >
           <Image style={[style.icon, style.functionIcon]} source={AcceptBtn} />
         </Pressable>
       </View>
