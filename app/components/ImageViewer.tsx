@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { View, Pressable, StyleSheet, Alert, Linking } from "react-native";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
-import AsyncStorafe from "@react-native-async-storage/async-storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Photo {
@@ -40,22 +39,28 @@ export default function ImageViewer() {
 
     const media = await MediaLibrary.getAssetsAsync({
       mediaType: "photo",
-      first: 50,
     });
 
     const fetchedPhotos: Photo[] = media.assets.map((asset) => ({
       id: asset.id,
       uri: asset.uri,
     }));
-    console.log(fetchedPhotos);
+    console.log(photos);
     setPhotos(fetchedPhotos);
+    compareWithSortedPhotos();
   };
 
   useEffect(() => {
+    getIdData();
     fetchLocalPhotos();
   }, []);
 
-  const compareWithSortedPhotos = () => {};
+  const compareWithSortedPhotos = () => {
+    const checkedPhotos = photos.filter(
+      (photo) => !sortedPhotos.some((p) => p === photo.id)
+    );
+    setPhotos(checkedPhotos);
+  };
 
   const keepPhoto = (id: id) => {
     setSortedPhotos([...sortedPhotos, id]);
@@ -64,6 +69,7 @@ export default function ImageViewer() {
   };
   const showNextPhoto = () => {
     if (currentPhotoIndex + 1 < photos.length) {
+      storeIdData();
       setCurrentPhotoIndex((prev) => prev + 1);
     } else {
       Alert.alert("Done", "No more photos to sweep!");
