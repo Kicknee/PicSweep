@@ -1,16 +1,14 @@
 import { Image } from "expo-image";
 import * as SplashScreen from "expo-splash-screen";
+import * as MediaLibrary from "expo-media-library";
+
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+
+import ImageViewer from "./components/ImageViewer";
 
 export default function Index() {
-  const PlaceholderImage = require("@/assets/images/background-image.png");
-  const LeftArrowBtn = require("@/assets/images/left-arrow.png");
-  const RightArrowBtn = require("@/assets/images/right-arrow.png");
-  const CancelBtn = require("@/assets/images/cancel.png");
-  const AcceptBtn = require("@/assets/images/accept.png");
-
   const [loaded, error] = useFonts({
     Pacifico: require("@/assets/fonts/Pacifico-Regular.ttf"),
   });
@@ -30,27 +28,7 @@ export default function Index() {
       <View>
         <Text style={style.appTitle}>PicSweep</Text>
       </View>
-      <View style={style.imageContainer}>
-        <View style={[style.iconsTaskbar, style.iconsTaskbarLeft]}>
-          <Image style={[style.icon, style.arrowIcon]} source={LeftArrowBtn} />
-          <Pressable style={style.btn}>
-            <Image
-              style={[style.icon, style.functionIcon]}
-              source={CancelBtn}
-            />
-          </Pressable>
-        </View>
-        <Image source={PlaceholderImage} style={style.image} />
-        <View style={[style.iconsTaskbar, style.iconsTaskbarRight]}>
-          <Image style={[style.icon, style.arrowIcon]} source={RightArrowBtn} />
-          <Pressable style={style.btn}>
-            <Image
-              style={[style.icon, style.functionIcon]}
-              source={AcceptBtn}
-            />
-          </Pressable>
-        </View>
-      </View>
+      <ImageViewer />
     </View>
   );
 }
