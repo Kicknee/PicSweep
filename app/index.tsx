@@ -1,6 +1,4 @@
-import { Image } from "expo-image";
 import * as SplashScreen from "expo-splash-screen";
-import * as MediaLibrary from "expo-media-library";
 
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
