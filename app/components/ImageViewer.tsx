@@ -48,11 +48,18 @@ export default function ImageViewer() {
     })();
   }, []);
 
+  function showNextPhoto() {
+    if (currentPhotoIndex + 1 < photos.length) {
+      setCurrentPhotoIndex((prev) => prev + 1);
+    } else {
+      Alert.alert("Done", "No more photos to sweep!");
+    }
+  }
   return (
     <View style={style.imageContainer}>
       <View style={[style.iconsTaskbar, style.iconsTaskbarLeft]}>
         <Image style={[style.icon, style.arrowIcon]} source={LeftArrowBtn} />
-        <Pressable style={style.btn}>
+        <Pressable style={style.btn} onPress={showNextPhoto}>
           <Image style={[style.icon, style.functionIcon]} source={CancelBtn} />
         </Pressable>
       </View>
@@ -67,7 +74,7 @@ export default function ImageViewer() {
 
       <View style={[style.iconsTaskbar, style.iconsTaskbarRight]}>
         <Image style={[style.icon, style.arrowIcon]} source={RightArrowBtn} />
-        <Pressable style={style.btn}>
+        <Pressable style={style.btn} onPress={showNextPhoto}>
           <Image style={[style.icon, style.functionIcon]} source={AcceptBtn} />
         </Pressable>
       </View>
