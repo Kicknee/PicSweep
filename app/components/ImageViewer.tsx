@@ -1,6 +1,12 @@
-import React from "react";
-import { View, Pressable, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Pressable, StyleSheet, Alert, Linking } from "react-native";
 import { Image } from "expo-image";
+import * as MediaLibrary from "expo-media-library";
+
+interface Photo {
+  id: string;
+  uri: string;
+}
 
 export default function ImageViewer() {
   const PlaceholderImage = require("@/assets/images/background-image.png");
@@ -8,6 +14,39 @@ export default function ImageViewer() {
   const RightArrowBtn = require("@/assets/images/right-arrow.png");
   const CancelBtn = require("@/assets/images/cancel.png");
   const AcceptBtn = require("@/assets/images/accept.png");
+
+  const [sortedPhotos, setSortedPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState<number>(0);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Camera access required",
+          "You need to manually enable camera access in the app settings.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => Linking.openSettings() },
+          ]
+        );
+
+        return;
+      }
+
+      const media = await MediaLibrary.getAssetsAsync({
+        mediaType: "photo",
+        first: 3,
+      });
+
+      const fetchedPhotos: Photo[] = media.assets.map((asset) => ({
+        id: asset.id,
+        uri: asset.uri,
+      }));
+      setPhotos(fetchedPhotos);
+    })();
+  }, []);
 
   return (
     <View style={style.imageContainer}>
@@ -17,7 +56,15 @@ export default function ImageViewer() {
           <Image style={[style.icon, style.functionIcon]} source={CancelBtn} />
         </Pressable>
       </View>
-      <Image source={PlaceholderImage} style={style.image} />
+      {photos?.length > 0 ? (
+        <Image
+          source={{ uri: photos[currentPhotoIndex].uri }}
+          style={style.image}
+        />
+      ) : (
+        <Image source={PlaceholderImage} style={style.image} />
+      )}
+
       <View style={[style.iconsTaskbar, style.iconsTaskbarRight]}>
         <Image style={[style.icon, style.arrowIcon]} source={RightArrowBtn} />
         <Pressable style={style.btn}>
