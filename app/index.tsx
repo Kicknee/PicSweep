@@ -2,8 +2,9 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import ImageViewer from "./components/ImageViewer";
 
@@ -24,8 +25,11 @@ export default function Index() {
 
   return (
     <GestureHandlerRootView style={style.container}>
-      <View>
+      <View style={style.header}>
         <Text style={style.appTitle}>PicSweep</Text>
+        <Pressable>
+          <MaterialIcons name="menu" color="#fff" size={42} />
+        </Pressable>
       </View>
       <ImageViewer />
     </GestureHandlerRootView>
@@ -38,59 +42,19 @@ const style = StyleSheet.create({
     backgroundColor: "#E67263",
     alignItems: "center",
   },
-  appTitle: {
-    fontFamily: "Pacifico",
-    fontSize: 64,
-    color: "white",
-    marginVertical: 40,
-  },
-  imageContainer: {
-    width: "70%",
-    height: "60%",
-    position: "relative",
+  header: {
+    width: "85%",
+    height: "auto",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    transform: "rotate(6deg)",
   },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-    borderRadius: 35,
-    borderColor: "white",
-    borderWidth: 14,
-  },
-  iconsTaskbar: {
-    zIndex: 3,
-    width: 70,
-    height: 150,
-  },
-  iconsTaskbarLeft: {
-    alignItems: "flex-start",
-    transform: "translate(30px, -30px)",
-  },
-
-  iconsTaskbarRight: {
-    alignItems: "flex-end",
-    transform: "translate(-30px, 30px)",
-  },
-  icon: {
+  appTitle: {
     flex: 1,
-    width: "100%",
-    resizeMode: "contain",
-  },
-  arrowIcon: {
-    width: 37,
-    height: 37,
-    opacity: 0.2,
-  },
-  functionIcon: {
-    width: 70,
-    height: 70,
-  },
-  btn: {
-    width: "100%",
-    height: "50%",
+    fontFamily: "Pacifico",
+    fontSize: 50,
+    color: "white",
+    marginVertical: 60,
+    textAlign: "center",
   },
 });
