@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -10,6 +10,12 @@ import {
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 interface Photo {
   id: string;
@@ -28,6 +34,9 @@ export default function ImageViewer() {
   const [reviewedPhotos, setReviewedPhotos] = useState<id[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const translateX = useSharedValue(0);
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
     (async () => {
@@ -65,6 +74,28 @@ export default function ImageViewer() {
 
   const currentImage = photos[currentIndex];
 
+  const drag = Gesture.Pan()
+    .onStart(() => {
+      opacity.value = 0;
+    })
+    .onChange((event) => {
+      translateX.value += event.changeX;
+    })
+    .onEnd(() => {
+      translateX.value = 0;
+      opacity.value = 1;
+    });
+
+  const containerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    };
+  });
+  const iconsStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withSpring(opacity.value),
+    };
+  });
   const handleKeep = async () => {
     if (!currentImage) {
       Alert.alert("Congrats!", "No more photos to sweep!");
@@ -93,24 +124,32 @@ export default function ImageViewer() {
     setCurrentIndex((prev) => prev + 1);
   };
   return (
-    <View style={style.imageContainer}>
-      <View style={[style.iconsTaskbar, style.iconsTaskbarLeft]}>
+    <View style={style.viewerContainer}>
+      <Animated.View
+        style={[style.iconsTaskbar, style.iconsTaskbarLeft, iconsStyle]}
+      >
         <Image style={[style.icon, style.arrowIcon]} source={LeftArrowBtn} />
         <Pressable style={style.btn} onPress={handleDelete}>
           <Image style={[style.icon, style.functionIcon]} source={CancelBtn} />
         </Pressable>
-      </View>
-      <Image
-        source={currentImage ? { uri: currentImage.uri } : PlaceholderImage}
-        style={style.image}
-      />
+      </Animated.View>
+      <GestureDetector gesture={drag}>
+        <Animated.View style={[style.imageContainer, containerStyle]}>
+          <Image
+            source={currentImage ? { uri: currentImage.uri } : PlaceholderImage}
+            style={style.image}
+          />
+        </Animated.View>
+      </GestureDetector>
 
-      <View style={[style.iconsTaskbar, style.iconsTaskbarRight]}>
+      <Animated.View
+        style={[style.iconsTaskbar, style.iconsTaskbarRight, iconsStyle]}
+      >
         <Image style={[style.icon, style.arrowIcon]} source={RightArrowBtn} />
         <Pressable style={style.btn} onPress={handleKeep}>
           <Image style={[style.icon, style.functionIcon]} source={AcceptBtn} />
         </Pressable>
-      </View>
+      </Animated.View>
       {/* <View style={{ position: "fixed", bottom: 0, left: "-10%" }}>
         <Pressable
           onPress={() => {
@@ -126,7 +165,7 @@ export default function ImageViewer() {
 }
 
 const style = StyleSheet.create({
-  imageContainer: {
+  viewerContainer: {
     width: "70%",
     height: "60%",
     position: "relative",
@@ -134,6 +173,10 @@ const style = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     transform: "rotate(6deg)",
+  },
+  imageContainer: {
+    width: "100%",
+    height: "100%",
   },
   image: {
     width: "100%",
