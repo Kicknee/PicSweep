@@ -68,7 +68,7 @@ export default function ImageViewer() {
 
       //filter photos already reviewed
       const filtered = media.assets.filter(
-        (asset) => !reviewedPhotos.includes(asset.id)
+        (asset) => !reviewedList.includes(asset.id)
       );
       setPhotos(filtered);
       setCurrentIndex(0);
@@ -172,7 +172,7 @@ export default function ImageViewer() {
           <Image style={[style.icon, style.functionIcon]} source={AcceptBtn} />
         </Pressable>
       </Animated.View>
-      {/* <View style={{ position: "fixed", bottom: 0, left: "-10%" }}>
+      <View style={{ position: "fixed", bottom: 0, left: "-10%" }}>
         <Pressable
           onPress={() => {
             console.log("clear");
@@ -181,7 +181,7 @@ export default function ImageViewer() {
         >
           <Text>Reset</Text>
         </Pressable>
-      </View> */}
+      </View>
     </View>
   );
 }
