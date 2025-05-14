@@ -11,6 +11,7 @@ import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -23,6 +24,8 @@ interface Photo {
 }
 
 type id = string;
+
+const SWIPE_THRESHOLD = 180;
 
 export default function ImageViewer() {
   const PlaceholderImage = require("@/assets/images/background-image.png");
@@ -44,8 +47,8 @@ export default function ImageViewer() {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
-          "Camera access required",
-          "You need to manually enable camera access in the app settings.",
+          "Library access required",
+          "You need to manually enable library access in the app settings.",
           [
             { text: "Cancel", style: "cancel" },
             { text: "Open Settings", onPress: () => Linking.openSettings() },
@@ -70,7 +73,7 @@ export default function ImageViewer() {
       setPhotos(filtered);
       setCurrentIndex(0);
     })();
-  });
+  }, []);
 
   const currentImage = photos[currentIndex];
 
@@ -81,9 +84,18 @@ export default function ImageViewer() {
     .onChange((event) => {
       translateX.value += event.changeX;
     })
-    .onEnd(() => {
-      translateX.value = 0;
-      opacity.value = 1;
+    .onEnd((event) => {
+      if (event.translationX >= SWIPE_THRESHOLD) {
+        runOnJS(nextImage)();
+        console.log("func");
+      } else if (event.translationX <= -SWIPE_THRESHOLD) {
+        runOnJS(handleDelete)();
+        console.log("func");
+      } else {
+        translateX.value = 0;
+        opacity.value = 1;
+      }
+      console.log(event.translationX);
     });
 
   const containerStyle = useAnimatedStyle(() => {
@@ -97,6 +109,8 @@ export default function ImageViewer() {
     };
   });
   const handleKeep = async () => {
+    console.log("keep photo");
+
     if (!currentImage) {
       Alert.alert("Congrats!", "No more photos to sweep!");
       return;
@@ -106,10 +120,12 @@ export default function ImageViewer() {
     setReviewedPhotos(newList);
     await AsyncStorage.setItem("reviewedPhotos", JSON.stringify(newList));
     //move to the next photo
-    setCurrentIndex((prev) => prev + 1);
+    nextImage();
   };
 
   const handleDelete = async () => {
+    console.log("delete photo");
+
     if (!currentImage) {
       Alert.alert("Congrats!", "No more photos to sweep!");
       return;
@@ -121,6 +137,12 @@ export default function ImageViewer() {
     setReviewedPhotos(newList);
     await AsyncStorage.setItem("reviewedPhotos", JSON.stringify(newList));
     //move to the next photo
+    nextImage();
+  };
+
+  const nextImage = () => {
+    translateX.value = 0;
+    opacity.value = 1;
     setCurrentIndex((prev) => prev + 1);
   };
   return (
@@ -177,14 +199,16 @@ const style = StyleSheet.create({
   imageContainer: {
     width: "100%",
     height: "100%",
+    boxShadow: "5px 5px 25px black",
+    borderRadius: 35,
+    borderColor: "white",
+    borderWidth: 14,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
-    borderRadius: 35,
-    borderColor: "white",
-    borderWidth: 14,
   },
   iconsTaskbar: {
     zIndex: 3,
