@@ -86,16 +86,13 @@ export default function ImageViewer() {
     })
     .onEnd((event) => {
       if (event.translationX >= SWIPE_THRESHOLD) {
-        runOnJS(nextImage)();
-        console.log("func");
+        runOnJS(handleKeep)();
       } else if (event.translationX <= -SWIPE_THRESHOLD) {
         runOnJS(handleDelete)();
-        console.log("func");
       } else {
         translateX.value = 0;
         opacity.value = 1;
       }
-      console.log(event.translationX);
     });
 
   const containerStyle = useAnimatedStyle(() => {
@@ -108,9 +105,7 @@ export default function ImageViewer() {
       opacity: withSpring(opacity.value),
     };
   });
-  const handleKeep = async () => {
-    console.log("keep photo");
-
+  async function handleKeep() {
     if (!currentImage) {
       Alert.alert("Congrats!", "No more photos to sweep!");
       return;
@@ -121,11 +116,9 @@ export default function ImageViewer() {
     await AsyncStorage.setItem("reviewedPhotos", JSON.stringify(newList));
     //move to the next photo
     nextImage();
-  };
+  }
 
-  const handleDelete = async () => {
-    console.log("delete photo");
-
+  async function handleDelete() {
     if (!currentImage) {
       Alert.alert("Congrats!", "No more photos to sweep!");
       return;
@@ -138,7 +131,7 @@ export default function ImageViewer() {
     await AsyncStorage.setItem("reviewedPhotos", JSON.stringify(newList));
     //move to the next photo
     nextImage();
-  };
+  }
 
   const nextImage = () => {
     translateX.value = 0;
