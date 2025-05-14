@@ -3,6 +3,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
 import { Text, View, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import ImageViewer from "./components/ImageViewer";
 
@@ -22,12 +23,12 @@ export default function Index() {
   }
 
   return (
-    <View style={style.container}>
+    <GestureHandlerRootView style={style.container}>
       <View>
         <Text style={style.appTitle}>PicSweep</Text>
       </View>
       <ImageViewer />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
