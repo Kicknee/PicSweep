@@ -165,16 +165,6 @@ export default function ImageViewer() {
           <Image style={[style.icon, style.functionIcon]} source={AcceptBtn} />
         </Pressable>
       </Animated.View>
-      <View style={{ position: "fixed", bottom: 0, left: "-10%" }}>
-        <Pressable
-          onPress={() => {
-            console.log("clear");
-            AsyncStorage.clear();
-          }}
-        >
-          <Text>Reset</Text>
-        </Pressable>
-      </View>
     </View>
   );
 }
