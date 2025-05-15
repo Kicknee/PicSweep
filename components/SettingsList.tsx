@@ -10,7 +10,7 @@ export default function SettingsList() {
     { name: "history", text: "Reset photos", onPress: resetHistory },
     {
       name: "report",
-      text: "Report",
+      text: "Report bugs",
       onPress: () => {
         return;
       },
