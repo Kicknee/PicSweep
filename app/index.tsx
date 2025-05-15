@@ -66,7 +66,7 @@ const style = StyleSheet.create({
     fontFamily: "Pacifico",
     fontSize: 50,
     color: "white",
-    marginVertical: 60,
+    marginVertical: 40,
     textAlign: "center",
   },
 });
