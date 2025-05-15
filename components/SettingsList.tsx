@@ -8,6 +8,13 @@ export default function SettingsList() {
 
   const options: { name: IconName; text: string; onPress: () => void }[] = [
     { name: "history", text: "Reset photos", onPress: resetHistory },
+    {
+      name: "report",
+      text: "Report",
+      onPress: () => {
+        return;
+      },
+    },
   ];
   return (
     <FlatList
@@ -16,7 +23,7 @@ export default function SettingsList() {
       renderItem={({ item, index }) => (
         <Pressable onPress={item.onPress}>
           <View style={styles.btnContent}>
-            <MaterialIcons name={item.name} color="#fff" size={28} />
+            <MaterialIcons name={item.name} color="#fff" size={25} />
             <Text style={styles.btnText}>{item.text}</Text>
           </View>
         </Pressable>
@@ -27,28 +34,20 @@ export default function SettingsList() {
 
 const styles = StyleSheet.create({
   listContainer: {
-    height: "100%",
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    paddingHorizontal: 20,
-    padding: 10,
     alignItems: "center",
+    gap: 10,
     justifyContent: "center",
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginRight: 20,
-  },
   btnContent: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   btnText: {
+    flex: 1,
     color: "white",
-    fontSize: 25,
-    fontWeight: "bold",
+    fontSize: 16,
     marginStart: 5,
   },
 });
