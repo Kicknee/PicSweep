@@ -19,37 +19,43 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <Pressable style={styles.modalBackground} onPress={onClose}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.title}>Settings</Text>
+        <Pressable onPress={() => {}}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.title}>Settings</Text>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Reminders</Text>
-            <TouchableOpacity
-              style={styles.radioOption}
-              onPress={() => setReminder("daily")}
-            >
-              <View style={styles.radioCircle}>
-                {reminder === "daily" && <View style={styles.radioSelected} />}
-              </View>
-              <Text style={styles.optionText}>Daily</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.radioOption}
-              onPress={() => setReminder("weekly")}
-            >
-              <View style={styles.radioCircle}>
-                {reminder === "weekly" && <View style={styles.radioSelected} />}
-              </View>
-              <Text style={styles.optionText}>Weekly</Text>
-            </TouchableOpacity>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Reminders</Text>
+              <TouchableOpacity
+                style={styles.radioOption}
+                onPress={() => setReminder("daily")}
+              >
+                <View style={styles.radioCircle}>
+                  {reminder === "daily" && (
+                    <View style={styles.radioSelected} />
+                  )}
+                </View>
+                <Text style={styles.optionText}>Daily</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.radioOption}
+                onPress={() => setReminder("weekly")}
+              >
+                <View style={styles.radioCircle}>
+                  {reminder === "weekly" && (
+                    <View style={styles.radioSelected} />
+                  )}
+                </View>
+                <Text style={styles.optionText}>Weekly</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.section}>{children}</View>
+
+            <Pressable style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </Pressable>
           </View>
-
-          <View style={styles.section}>{children}</View>
-
-          <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </Pressable>
-        </View>
+        </Pressable>
       </Pressable>
     </Modal>
   );
