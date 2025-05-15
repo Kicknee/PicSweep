@@ -18,7 +18,7 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
 
   return (
     <Modal visible={isVisible} transparent animationType="fade">
-      <View style={styles.modalBackground}>
+      <Pressable style={styles.modalBackground} onPress={onClose}>
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Settings</Text>
 
@@ -50,7 +50,7 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
             <Text style={styles.closeButtonText}>Close</Text>
           </Pressable>
         </View>
-      </View>
+      </Pressable>
     </Modal>
   );
 }
