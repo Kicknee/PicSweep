@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import SettingsList from "./SettingsList";
 
 type Props = PropsWithChildren<{
   isVisible: boolean;
@@ -45,9 +44,7 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.section}>
-            <SettingsList />
-          </View>
+          <View style={styles.section}>{children}</View>
 
           <Pressable style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>Close</Text>
