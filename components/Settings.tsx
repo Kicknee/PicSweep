@@ -16,65 +16,71 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
   );
 
   return (
-    <Modal visible={isVisible} transparent animationType="fade">
-      <View style={styles.modalBackground}>
-        <Pressable
-          style={{ ...StyleSheet.absoluteFillObject }}
-          onPress={onClose}
-        ></Pressable>
-        <View style={styles.modalContainer}>
-          <Text style={styles.title}>Settings</Text>
+    <View style={styles.modalBackground}>
+      <Modal visible={isVisible} transparent animationType="fade">
+        <View style={styles.modalBackground}>
+          <Pressable
+            style={{ ...StyleSheet.absoluteFillObject }}
+            onPress={onClose}
+          ></Pressable>
+          <View style={styles.modalContainer}>
+            <Text style={styles.title}>Settings</Text>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Reminders</Text>
-            <Pressable
-              style={styles.radioOption}
-              onPress={async () => {
-                await cancelAllNotifications();
-                await scheduleNotification("daily");
-                setReminder("daily");
-              }}
-            >
-              <View style={styles.radioCircle}>
-                {reminder === "daily" && <View style={styles.radioSelected} />}
-              </View>
-              <Text style={styles.optionText}>Daily</Text>
-            </Pressable>
-            <Pressable
-              style={styles.radioOption}
-              onPress={async () => {
-                await cancelAllNotifications();
-                await scheduleNotification("weekly");
-                setReminder("weekly");
-              }}
-            >
-              <View style={styles.radioCircle}>
-                {reminder === "weekly" && <View style={styles.radioSelected} />}
-              </View>
-              <Text style={styles.optionText}>Weekly</Text>
-            </Pressable>
-            <Pressable
-              style={styles.radioOption}
-              onPress={async () => {
-                await cancelAllNotifications();
-                setReminder("none");
-              }}
-            >
-              <View style={styles.radioCircle}>
-                {reminder === "none" && <View style={styles.radioSelected} />}
-              </View>
-              <Text style={styles.optionText}>Disable</Text>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Reminders</Text>
+              <Pressable
+                style={styles.radioOption}
+                onPress={async () => {
+                  await cancelAllNotifications();
+                  await scheduleNotification("daily");
+                  setReminder("daily");
+                }}
+              >
+                <View style={styles.radioCircle}>
+                  {reminder === "daily" && (
+                    <View style={styles.radioSelected} />
+                  )}
+                </View>
+                <Text style={styles.optionText}>Daily</Text>
+              </Pressable>
+              <Pressable
+                style={styles.radioOption}
+                onPress={async () => {
+                  await cancelAllNotifications();
+                  await scheduleNotification("weekly");
+                  setReminder("weekly");
+                }}
+              >
+                <View style={styles.radioCircle}>
+                  {reminder === "weekly" && (
+                    <View style={styles.radioSelected} />
+                  )}
+                </View>
+                <Text style={styles.optionText}>Weekly</Text>
+              </Pressable>
+              <Pressable
+                style={styles.radioOption}
+                onPress={async () => {
+                  await cancelAllNotifications();
+                  setReminder("none");
+                }}
+              >
+                <View style={styles.radioCircle}>
+                  {reminder === "none" && <View style={styles.radioSelected} />}
+                </View>
+                <Text style={styles.optionText}>Disable</Text>
+              </Pressable>
+            </View>
+
+            <View style={styles.section}>{children}</View>
+
+            <Pressable style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>Close</Text>
             </Pressable>
           </View>
-
-          <View style={styles.section}>{children}</View>
-
-          <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </Pressable>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </View>
   );
 }
 
