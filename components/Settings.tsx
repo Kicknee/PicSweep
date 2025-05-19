@@ -1,9 +1,14 @@
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import {
   scheduleNotification,
   cancelAllNotifications,
+  useNotificationSetup,
+  saveReminderSetting,
+  loadReminderSetting,
 } from "@/utils/useNotifications";
 import { Modal, View, Text, Pressable, StyleSheet } from "react-native";
+
+type ReminderType = "daily" | "weekly" | "none" | null;
 
 type Props = PropsWithChildren<{
   isVisible: boolean;
@@ -11,9 +16,32 @@ type Props = PropsWithChildren<{
 }>;
 
 export default function SettingsModal({ children, isVisible, onClose }: Props) {
-  const [reminder, setReminder] = useState<"daily" | "weekly" | "none" | null>(
-    null
-  );
+  const [reminder, setReminder] = useState<ReminderType>(null);
+
+  useNotificationSetup();
+
+  useEffect(() => {
+    const fetchReminder = async () => {
+      const saved = await loadReminderSetting();
+      if (saved) {
+        setReminder(saved);
+      }
+    };
+
+    if (isVisible) {
+      fetchReminder();
+    }
+  }, [isVisible]);
+
+  const handleReminderSelection = (type: "daily" | "weekly" | "none") => {
+    setReminder(type);
+    saveReminderSetting(type);
+    cancelAllNotifications();
+
+    if (type !== "none") {
+      scheduleNotification(type);
+    }
+  };
 
   return (
     <View style={styles.modalBackground}>
@@ -28,13 +56,10 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
 
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Reminders</Text>
+
               <Pressable
                 style={styles.radioOption}
-                onPress={async () => {
-                  await cancelAllNotifications();
-                  await scheduleNotification("daily");
-                  setReminder("daily");
-                }}
+                onPress={() => handleReminderSelection("daily")}
               >
                 <View style={styles.radioCircle}>
                   {reminder === "daily" && (
@@ -43,13 +68,10 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
                 </View>
                 <Text style={styles.optionText}>Daily</Text>
               </Pressable>
+
               <Pressable
                 style={styles.radioOption}
-                onPress={async () => {
-                  await cancelAllNotifications();
-                  await scheduleNotification("weekly");
-                  setReminder("weekly");
-                }}
+                onPress={() => handleReminderSelection("weekly")}
               >
                 <View style={styles.radioCircle}>
                   {reminder === "weekly" && (
@@ -58,12 +80,10 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
                 </View>
                 <Text style={styles.optionText}>Weekly</Text>
               </Pressable>
+
               <Pressable
                 style={styles.radioOption}
-                onPress={async () => {
-                  await cancelAllNotifications();
-                  setReminder("none");
-                }}
+                onPress={() => handleReminderSelection("none")}
               >
                 <View style={styles.radioCircle}>
                   {reminder === "none" && <View style={styles.radioSelected} />}
@@ -84,7 +104,7 @@ export default function SettingsModal({ children, isVisible, onClose }: Props) {
   );
 }
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.3)",
