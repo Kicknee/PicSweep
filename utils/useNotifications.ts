@@ -14,7 +14,7 @@ const REMINDER_KEY = "user_reminder_preference";
 
 export type ReminderType = "daily" | "weekly" | "none";
 
-// 📲 Konfiguracja kanału (Android)
+// Configure channel (Android)
 async function configureNotificationChannel() {
   await Notifications.setNotificationChannelAsync("default", {
     name: "Default",
@@ -33,22 +33,20 @@ export async function scheduleNotification(interval: "daily" | "weekly") {
 
   await configureNotificationChannel();
 
-  let trigger: Notifications.NotificationTriggerInput;
+  let trigger: any;
 
   // if (interval === "daily") {
   //   trigger = {
-  //     type: "calendar",
+  //     type: "daily",
   //     hour: 19,
   //     minute: 0,
-  //     repeats: true,
   //   };
   // } else {
   //   trigger = {
-  //     type: "calendar",
-  //     weekday: 2, // poniedziałek
+  //     type: "weekly",
+  //     weekday: 2, // Monday
   //     hour: 19,
   //     minute: 0,
-  //     repeats: true,
   //   };
   // }
   if (interval === "daily") {
