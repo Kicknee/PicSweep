@@ -68,5 +68,7 @@ const style = StyleSheet.create({
     color: "white",
     marginVertical: 40,
     textAlign: "center",
+    letterSpacing: 2,
+    transform: "translateY(-10px)",
   },
 });
