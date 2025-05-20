@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  Alert,
-  Linking,
-} from "react-native";
+import { View, Pressable, StyleSheet, Alert, Linking } from "react-native";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,8 +36,8 @@ export default function ImageViewer() {
 
   useEffect(() => {
     (async () => {
-      //ask for permission to the local library
       const { status } = await MediaLibrary.requestPermissionsAsync();
+
       if (status !== "granted") {
         Alert.alert(
           "Library access required",
@@ -56,17 +49,15 @@ export default function ImageViewer() {
         );
         return;
       }
-      //load reviewed photos from the local storage
+
       const saved = await AsyncStorage.getItem("reviewedPhotos");
       const reviewedList = saved ? JSON.parse(saved) : [];
       setReviewedPhotos(reviewedList);
 
-      //load photos from the library
       const media = await MediaLibrary.getAssetsAsync({
         mediaType: "photo",
       });
 
-      //filter photos already reviewed
       const filtered = media.assets.filter(
         (asset) => !reviewedList.includes(asset.id)
       );
@@ -100,21 +91,21 @@ export default function ImageViewer() {
       transform: [{ translateX: translateX.value }],
     };
   });
+
   const iconsStyle = useAnimatedStyle(() => {
     return {
       opacity: withSpring(opacity.value),
     };
   });
+
   async function handleKeep() {
     if (!currentImage) {
       Alert.alert("Congrats!", "No more photos to sweep!");
       return;
     }
-    //add ID to the reviewedPhotos state and save in local storage
     const newList = [...reviewedPhotos, currentImage.id];
     setReviewedPhotos(newList);
     await AsyncStorage.setItem("reviewedPhotos", JSON.stringify(newList));
-    //move to the next photo
     nextImage();
   }
 
@@ -123,21 +114,35 @@ export default function ImageViewer() {
       Alert.alert("Congrats!", "No more photos to sweep!");
       return;
     }
-    //delete a photo from the library
-    await MediaLibrary.deleteAssetsAsync(currentImage.id);
-    //add ID to the reviewedPhotos state and save in local storage
+
+    try {
+      const assetId = currentImage.id;
+      await MediaLibrary.deleteAssetsAsync([assetId]);
+    } catch (error) {
+      console.error("Error deleting asset:", error);
+      Alert.alert(
+        "Could not delete photo",
+        "This photo cannot be deleted. It may be protected or cloud-based."
+      );
+      const newList = [...reviewedPhotos, currentImage.id];
+      setReviewedPhotos(newList);
+      await AsyncStorage.setItem("reviewedPhotos", JSON.stringify(newList));
+      nextImage();
+      return;
+    }
+
     const newList = [...reviewedPhotos, currentImage.id];
     setReviewedPhotos(newList);
     await AsyncStorage.setItem("reviewedPhotos", JSON.stringify(newList));
-    //move to the next photo
     nextImage();
   }
 
-  const nextImage = () => {
+  function nextImage() {
     translateX.value = 0;
     opacity.value = 1;
     setCurrentIndex((prev) => prev + 1);
-  };
+  }
+
   return (
     <View style={style.viewerContainer}>
       <Animated.View
@@ -148,6 +153,7 @@ export default function ImageViewer() {
           <Image style={[style.icon, style.functionIcon]} source={CancelBtn} />
         </Pressable>
       </Animated.View>
+
       <GestureDetector gesture={drag}>
         <Animated.View style={[style.imageContainer, containerStyle]}>
           <Image
@@ -202,7 +208,6 @@ const style = StyleSheet.create({
     alignItems: "flex-start",
     transform: "translate(30px, -30px)",
   },
-
   iconsTaskbarRight: {
     alignItems: "flex-end",
     transform: "translate(-30px, 30px)",
