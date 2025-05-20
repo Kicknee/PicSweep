@@ -38,7 +38,7 @@ export async function scheduleNotification(interval: "daily" | "weekly") {
   // if (interval === "daily") {
   //   trigger = {
   //     type: "calendar",
-  //     hour: 22,
+  //     hour: 19,
   //     minute: 0,
   //     repeats: true,
   //   };
@@ -46,15 +46,15 @@ export async function scheduleNotification(interval: "daily" | "weekly") {
   //   trigger = {
   //     type: "calendar",
   //     weekday: 2, // poniedziałek
-  //     hour: 22,
+  //     hour: 19,
   //     minute: 0,
   //     repeats: true,
   //   };
   // }
   if (interval === "daily") {
-    trigger = { type: "timeInterval", hour: 24, repeats: false };
+    trigger = { type: "timeInterval", seconds: 30, repeats: true };
   } else {
-    trigger = { type: "timeInterval", seconds: 168, repeats: false };
+    trigger = { type: "timeInterval", minute: 1, repeats: true };
   }
 
   await Notifications.scheduleNotificationAsync({
@@ -95,7 +95,7 @@ export function useNotificationSetup() {
 export async function saveReminderSetting(type: ReminderType) {
   try {
     await AsyncStorage.setItem(REMINDER_KEY, type);
-    console.log("💾 Saved reminder setting:", type);
+    console.log("Saved reminder setting:", type);
   } catch (error) {
     console.error("Failed to save reminder setting", error);
   }
